@@ -1,8 +1,8 @@
 function ToyPromise(resolver, name) {
   this._status = "pending";
-  this.name = name;
+  this._name = name;
 
-  resolver(this.resolve.bind(this), this.reject.bind(this));
+  resolver(this._resolve.bind(this), this._reject.bind(this));
 }
 
 ToyPromise.prototype.then = function(fullfilled, rejected, name) {
@@ -11,12 +11,12 @@ ToyPromise.prototype.then = function(fullfilled, rejected, name) {
 
   nextPromise = new ToyPromise(function resolver(resolve, reject) {}, name);
   this._nextPromise = nextPromise;
-  console.log("" + this.name + "'s nextPromise is " + name);
+  console.log("" + this._name + "'s nextPromise is " + name);
 
   return nextPromise;
 };
 
-ToyPromise.prototype.resolve = function resolve(value) {
+ToyPromise.prototype._resolve = function resolve(value) {
   if (this._status != "pending") {
     return;
   }
@@ -24,10 +24,10 @@ ToyPromise.prototype.resolve = function resolve(value) {
   this._status = "resolved";
   this._data = value;
 
-  setTimeout(this.asyncFullfilled.bind(this), 0);
+  setTimeout(this._asyncFullfilled.bind(this), 0);
 };
 
-ToyPromise.prototype.reject = function reject(error) {
+ToyPromise.prototype._reject = function reject(error) {
   if (this._status != "pending") {
     return;
   }
@@ -35,11 +35,11 @@ ToyPromise.prototype.reject = function reject(error) {
   this._status = "resolved";
   this._data = error;
 
-  setTimeout(this.asyncRejected.bind(this), 0);
+  setTimeout(this._asyncRejected.bind(this), 0);
 };
 
-ToyPromise.prototype.asyncFullfilled = function() {
-  console.log("\n" + this.name + " " + this._status + ": " + this._data);
+ToyPromise.prototype._asyncFullfilled = function() {
+  console.log("\n" + this._name + " " + this._status + ": " + this._data);
 
   if (!this._nextPromise) {
     return;
@@ -49,8 +49,8 @@ ToyPromise.prototype.asyncFullfilled = function() {
   try {
     result = this._fullfilled(this._data);
   } catch (error) {
-    console.log("reject next promise " + this._nextPromise.name);
-    this._nextPromise.reject(error);
+    console.log("reject next promise " + this._nextPromise._name);
+    this._nextPromise._reject(error);
 
     return;
   }
@@ -60,23 +60,23 @@ ToyPromise.prototype.asyncFullfilled = function() {
 
     result.then(
       function fullfilled(value) {
-        console.log("resolve old next promise " + oldNextPromise.name);
-        oldNextPromise.resolve(value);
+        console.log("resolve old next promise " + oldNextPromise._name);
+        oldNextPromise._resolve(value);
       },
       function rejected(error) {
-        console.log("reject old next promise " + oldNextPromise.name);
-        oldNextPromise.reject(error);
+        console.log("reject old next promise " + oldNextPromise._name);
+        oldNextPromise._reject(error);
       },
-      result.name + "'s next"
+      result._name + "'s next"
     );
   } else {
-    console.log("resolve next promise " + this._nextPromise.name);
-    this._nextPromise.resolve(result);
+    console.log("resolve next promise " + this._nextPromise._name);
+    this._nextPromise._resolve(result);
   }
 };
 
-ToyPromise.prototype.asyncRejected = function() {
-  console.log("\n" + this.name + " " + this._status + ": " + this._data);
+ToyPromise.prototype._asyncRejected = function() {
+  console.log("\n" + this._name + " " + this._status + ": " + this._data);
 
   if (!this._nextPromise) {
     return;
@@ -86,8 +86,8 @@ ToyPromise.prototype.asyncRejected = function() {
   try {
     result = this._rejected(this._data);
   } catch (error) {
-    console.log("reject next promise " + this._nextPromise.name);
-    this._nextPromise.reject(error);
+    console.log("reject next promise " + this._nextPromise._name);
+    this._nextPromise._reject(error);
 
     return;
   }
@@ -97,18 +97,18 @@ ToyPromise.prototype.asyncRejected = function() {
 
     result.then(
       function fullfilled(value) {
-        console.log("resolve old next promise " + oldNextPromise.name);
-        oldNextPromise.resolve(value);
+        console.log("resolve old next promise " + oldNextPromise._name);
+        oldNextPromise._resolve(value);
       },
       function rejected(error) {
-        console.log("reject old next promise " + oldNextPromise.name);
-        oldNextPromise.resolve(error);
+        console.log("reject old next promise " + oldNextPromise._name);
+        oldNextPromise._resolve(error);
       },
-      result.name + "'s next"
+      result._name + "'s next"
     );
   } else {
-    console.log("resolve next promise " + this._nextPromise.name);
-    this._nextPromise.resolve(result);
+    console.log("resolve next promise " + this._nextPromise._name);
+    this._nextPromise._resolve(result);
   }
 };
 
