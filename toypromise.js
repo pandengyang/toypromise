@@ -2,6 +2,13 @@ function ToyPromise(resolver, name) {
   this._status = "pending";
   this._name = name;
 
+  this._fullfilled = function dummyFullfilled(value) {
+    return value;
+  };
+  this._rejected = function dummyRejected(error) {
+    throw error;
+  };
+
   resolver(this._resolve.bind(this), this._reject.bind(this));
 }
 
@@ -56,18 +63,17 @@ ToyPromise.prototype._asyncFullfilled = function() {
   }
 
   if (result instanceof ToyPromise) {
-    var oldNextPromise = this._nextPromise;
+    result._fullfilled = this._nextPromise._fullfilled;
+    result._rejected = this._nextPromise._rejected;
+    result._nextPromise = this._nextPromise._nextPromise;
 
-    result.then(
-      function fullfilled(value) {
-        console.log("resolve old next promise " + oldNextPromise._name);
-        oldNextPromise._resolve(value);
-      },
-      function rejected(error) {
-        console.log("reject old next promise " + oldNextPromise._name);
-        oldNextPromise._reject(error);
-      },
-      result._name + "'s next"
+    this._nextPromise = result;
+
+    console.log(
+      "" + this._name + "'s nextPromise is " + this._nextPromise._name
+    );
+    console.log(
+      "" + result._name + "'s nextPromise is " + result._nextPromise._name
     );
   } else {
     console.log("resolve next promise " + this._nextPromise._name);
@@ -93,18 +99,17 @@ ToyPromise.prototype._asyncRejected = function() {
   }
 
   if (result instanceof ToyPromise) {
-    var oldNextPromise = this._nextPromise;
+    result._fullfilled = this._nextPromise._fullfilled;
+    result._rejected = this._nextPromise._rejected;
+    result._nextPromise = this._nextPromise._nextPromise;
 
-    result.then(
-      function fullfilled(value) {
-        console.log("resolve old next promise " + oldNextPromise._name);
-        oldNextPromise._resolve(value);
-      },
-      function rejected(error) {
-        console.log("reject old next promise " + oldNextPromise._name);
-        oldNextPromise._resolve(error);
-      },
-      result._name + "'s next"
+    this._nextPromise = result;
+
+    console.log(
+      "" + this._name + "'s nextPromise is " + this._nextPromise._name
+    );
+    console.log(
+      "" + result._name + "'s nextPromise is " + result._nextPromise._name
     );
   } else {
     console.log("resolve next promise " + this._nextPromise._name);
