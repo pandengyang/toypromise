@@ -28,7 +28,7 @@ ToyPromise.prototype._resolve = function resolve(value) {
     return;
   }
 
-  this._status = "resolved";
+  this._status = "fullfilled";
   this._data = value;
 
   setTimeout(this._asyncFullfilled.bind(this), 0);
@@ -39,7 +39,7 @@ ToyPromise.prototype._reject = function reject(error) {
     return;
   }
 
-  this._status = "resolved";
+  this._status = "rejected";
   this._data = error;
 
   setTimeout(this._asyncRejected.bind(this), 0);
@@ -54,9 +54,12 @@ ToyPromise.prototype._asyncFullfilled = function() {
 
   var result;
   try {
+    console.log("\tcall " + this._name + "'s _fullfiled");
     result = this._fullfilled(this._data);
   } catch (error) {
-    console.log("reject next promise " + this._nextPromise._name);
+    console.log(
+      "\treject next promise " + this._nextPromise._name + " by exception"
+    );
     this._nextPromise._reject(error);
 
     return;
@@ -70,13 +73,13 @@ ToyPromise.prototype._asyncFullfilled = function() {
     this._nextPromise = result;
 
     console.log(
-      "" + this._name + "'s nextPromise is " + this._nextPromise._name
+      "\t" + this._name + "'s next promise is " + this._nextPromise._name
     );
     console.log(
-      "" + result._name + "'s nextPromise is " + result._nextPromise._name
+      "\t" + result._name + "'s next promise is " + result._nextPromise._name
     );
   } else {
-    console.log("resolve next promise " + this._nextPromise._name);
+    console.log("\tresolve next promise " + this._nextPromise._name);
     this._nextPromise._resolve(result);
   }
 };
@@ -90,9 +93,12 @@ ToyPromise.prototype._asyncRejected = function() {
 
   var result;
   try {
+    console.log("\tcall " + this._name + "'s _rejected");
     result = this._rejected(this._data);
   } catch (error) {
-    console.log("reject next promise " + this._nextPromise._name);
+    console.log(
+      "\treject next promise " + this._nextPromise._name + "by exception"
+    );
     this._nextPromise._reject(error);
 
     return;
@@ -106,13 +112,13 @@ ToyPromise.prototype._asyncRejected = function() {
     this._nextPromise = result;
 
     console.log(
-      "" + this._name + "'s nextPromise is " + this._nextPromise._name
+      "\t" + this._name + "'s next promise is " + this._nextPromise._name
     );
     console.log(
-      "" + result._name + "'s nextPromise is " + result._nextPromise._name
+      "\t" + result._name + "'s next promise is " + result._nextPromise._name
     );
   } else {
-    console.log("resolve next promise " + this._nextPromise._name);
+    console.log("\tresolve next promise " + this._nextPromise._name);
     this._nextPromise._resolve(result);
   }
 };
