@@ -123,34 +123,34 @@ var A = new ToyPromise(function(resolve, reject) {
 }, "A");
 
 A.then(
-  function(value) {
+  function fullfilled(value) {
     return "b";
   },
-  function(error) {
+  function rejected(error) {
     return "b";
   },
   "B"
 )
   .then(
-    function(value) {
+    function fullfilled(value) {
       throw new Error("c");
     },
-    function(error) {
+    function rejected(error) {
       throw new Error("c");
     },
     "C"
   )
   .then(
-    function(value) {
+    function fullfilled(value) {
       return "d";
     },
-    function(error) {
+    function rejected(error) {
       return "d";
     },
     "D"
   )
   .then(
-    function(value) {
+    function fullfilled(value) {
       return new ToyPromise(function(resolve, reject) {
         var number = Math.random();
 
@@ -161,16 +161,16 @@ A.then(
         }
       }, "D_1");
     },
-    function(error) {
+    function rejected(error) {
       return "e";
     },
     "E"
   )
   .then(
-    function(value) {
+    function fullfilled(value) {
       return "f";
     },
-    function(error) {
+    function rejected(error) {
       return "f";
     },
     "F"
