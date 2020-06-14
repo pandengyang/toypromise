@@ -123,7 +123,7 @@ ToyPromise.prototype._asyncRejected = function() {
   }
 };
 
-var A = new ToyPromise(function(resolve, reject) {
+var A = new ToyPromise(function resolver(resolve, reject) {
   var number = Math.random();
 
   if (number <= 0.5) {
